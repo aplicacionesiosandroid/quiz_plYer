@@ -2,6 +2,7 @@ package com.phinnovation.quizplayer.presentation.tester.list
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,8 +59,14 @@ class TesterQuizListFragment : Fragment () {
             }
         }
 
-        viewModel.questions.observe(viewLifecycleOwner, Observer {
-            if (viewModel.questions.value != null && viewModel.questions.value!!.isNotEmpty()) {
+        viewModel.hasQuestionsCanBeOpened.observe(viewLifecycleOwner, Observer {
+            if (it==null) {
+                Log.d("TesterQuizFragment", "!!!!!!!!!!!!!!!!!!!Skipping null")
+                return@Observer
+            }
+
+            if (it) {
+                viewModel.hasQuestionsCanBeOpened.value = null
                 mainActivityDelegate.openQuizForPlayIntro()
             } else {
                 showErrorMisconfiguredQuiz()

@@ -2,7 +2,6 @@ package com.phinnovation.quizplayer.presentation.tester.list
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.phinnovation.core.domain.Question
 import com.phinnovation.core.domain.Quiz
 import com.phinnovation.quizplayer.framework.Interactors
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModel
@@ -14,7 +13,7 @@ class TesterQuizListViewModel (application: Application, interactors: Interactor
 
     val quizzes: MutableLiveData<List<Quiz>> = MutableLiveData()
 
-    val questions:MutableLiveData<List<Question>> = MutableLiveData()
+    val hasQuestionsCanBeOpened: MutableLiveData<Boolean> = MutableLiveData()
 
     fun loadQuizzes() {
         GlobalScope.launch {
@@ -24,7 +23,9 @@ class TesterQuizListViewModel (application: Application, interactors: Interactor
 
     fun checkIfQuizHasQuestionsAndThusCanBeOpened(quiz:Quiz) {
         GlobalScope.launch {
-            questions.postValue(interactors.getQuestions(quiz))
+            val questions = interactors.getQuestions(quiz)
+
+            hasQuestionsCanBeOpened.postValue(questions.isNotEmpty())
         }
     }
 
