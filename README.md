@@ -2,6 +2,12 @@
 
 ## Research / Exercise on Android Jetpack components and CLEAN architecture
 
+A Quiz Application that allows for quiz creation (containing any number of questions) and testing.
+
+A user can go to the admin area and create a number of quizes and their questions.
+
+Same user can then play test these quizzes to completion (or not, resuming is supported).
+
 ## Intro
 
 A Single Activity / Multi Fragment approach (fully rotatable) using:
@@ -10,14 +16,29 @@ A Single Activity / Multi Fragment approach (fully rotatable) using:
     and NavController for easy semi automatic fragment management without having to manually use the 
     fragment manager for fragment replacement and so on
     
-2.  Jetpack's SQlite database Rooms
+2.  Jetpack's SQlite database Rooms, also tested via integration testing both as raw Room daos and as Repositories
+    Check androidTest folder
 
 3.  Fragments get their state via their viewmodels and the associated data stores
     no need for passing arguments/bundles between fragments and returning values
     
 4.  LiveData is used to propagate changes from the viewmodel to fragment observers
 
-5.  CLEAN based architecture    
+5.  Drawer based navigation between the home page, the admin page and the tester page
+
+6.  CLEAN based architecture    
+
+### Further notes
+
+1.  In general fragments notify (via a delegate) their parent Activity for actions. 
+2.  In one case (QuizPlaying) the Activity delegates its back action to the corresponding fragment, 
+    so the user can (via an alert) to cancel or continue the quiz without exiting. This Fragment implements
+    a relevant interface, and the main activity when receiving back events always checks with its children 
+    before continuing with the back action
+3.  In some views multiple live data objects are exposed from their viewmodels
+4.  As an exercise in some view models, instead of returning miltiple data sources, that become available on after the other,
+    a single (Pair<A,B>) is returned via a Mediator objects that combines 2 LiveData emitters into 1 and 
+    waits for both to be present before emitting its value   
 
 ## Project Structure and notes
 

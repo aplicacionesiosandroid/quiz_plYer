@@ -97,6 +97,10 @@ class QuestionEditorFragment : Fragment () {
             enableRadiosForTrueOrCheckboxes(index == R.id.radio_radios) //true if single (radio_radios) was selected
         }
 
+        viewModel.questionDeleted.observe(viewLifecycleOwner, Observer {
+            this.findNavController().navigateUp()
+        })
+
         updateQuestionButton.setOnClickListener {
 
             var questionType:QuestionType ;
@@ -178,6 +182,7 @@ class QuestionEditorFragment : Fragment () {
                 answer_4.text.toString(),
                 correctAnswer
             )
+
         }
 
         viewModel.getOpenQuestion()
@@ -203,8 +208,6 @@ class QuestionEditorFragment : Fragment () {
         when (item.itemId) {
             R.id.action_delete_question -> {
                 viewModel.deleteQuestion()
-                this.findNavController().navigateUp()
-
                 return true;
             }
             else -> {

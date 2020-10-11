@@ -20,6 +20,8 @@ class QuestionEditorViewModel (application: Application, interactors: Interactor
     var quiz: MutableLiveData<Quiz> = MutableLiveData()
     var question: MutableLiveData<Question> = MutableLiveData()
 
+    var questionDeleted:MutableLiveData<Boolean> = MutableLiveData()
+
     fun getOpenQuestion() {
         quiz.postValue(interactors.getOpenQuiz())
         question.postValue(interactors.getOpenQuestion())
@@ -56,6 +58,7 @@ class QuestionEditorViewModel (application: Application, interactors: Interactor
                 GlobalScope.launch {
                     withContext(Dispatchers.IO) {
                         interactors.removeQuestion(itQuiz,itQuestion)
+                        questionDeleted.postValue(true)
                     }
                 }
             }

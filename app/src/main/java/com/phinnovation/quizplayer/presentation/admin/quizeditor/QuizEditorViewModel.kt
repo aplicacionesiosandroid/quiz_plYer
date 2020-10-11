@@ -1,7 +1,6 @@
 package com.phinnovation.quizplayer.presentation.admin.quizeditor
 
 import android.app.Application
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.phinnovation.core.domain.Question
 import com.phinnovation.core.domain.Quiz
@@ -15,43 +14,43 @@ import kotlinx.coroutines.withContext
 class QuizEditorViewModel (application: Application, interactors: Interactors):
         QuizPlayerViewModel(application,interactors) {
 
-    private var quiz: MutableLiveData<Quiz> = MutableLiveData()
+    var quiz: MutableLiveData<Quiz> = MutableLiveData()
 
-    private val questions: MutableLiveData<List<Question>> = MutableLiveData()
+    val questions: MutableLiveData<List<Question>> = MutableLiveData()
 
     var quizUpdated: MutableLiveData<Boolean> = MutableLiveData()
-    val quizAndQuestionsMediatedPair: MediatorLiveData<Pair<Quiz,List<Question>>> = MediatorLiveData()
+    //val quizAndQuestionsMediatedPair: MediatorLiveData<Pair<Quiz,List<Question>>> = MediatorLiveData()
 
-    init {
-        quizAndQuestionsMediatedPair.addSource(quiz) { _ ->
-            quizAndQuestionsMediatedPair.value = combineQuizAndQuestions(quiz,questions)
-        }
+//    init {
+//        quizAndQuestionsMediatedPair.addSource(quiz) { _ ->
+//            quizAndQuestionsMediatedPair.value = combineQuizAndQuestions(quiz,questions)
+//        }
+//
+//        quizAndQuestionsMediatedPair.addSource(questions) { _ ->
+//            quizAndQuestionsMediatedPair.value = combineQuizAndQuestions(quiz,questions)
+//        }
+//
+//    }
 
-        quizAndQuestionsMediatedPair.addSource(questions) { _ ->
-            quizAndQuestionsMediatedPair.value = combineQuizAndQuestions(quiz,questions)
-        }
-
-    }
-
-    private fun combineQuizAndQuestions(quiz: MutableLiveData<Quiz>, questions: MutableLiveData<List<Question>>): Pair<Quiz, List<Question>>? {
-        val qz = quiz.value
-        val qs = questions.value
-
-        if (qz == null || qs == null) {
-            if (qz != null) {
-                loadQuizQuestions(qz)
-            }
-            return null
-        }
-
-        return Pair(qz,qs)
-    }
+//    private fun combineQuizAndQuestions(quiz: MutableLiveData<Quiz>, questions: MutableLiveData<List<Question>>): Pair<Quiz, List<Question>>? {
+//        val qz = quiz.value
+//        val qs = questions.value
+//
+//        if (qz == null || qs == null) {
+//            if (qz != null) {
+//                loadQuizQuestions(qz)
+//            }
+//            return null
+//        }
+//
+//        return Pair(qz,qs)
+//    }
 
     fun getOpenQuizAndQuestions() {
         quiz.postValue(interactors.getOpenQuiz())
     }
 
-    private fun loadQuizQuestions(quiz:Quiz) {
+    fun loadQuizQuestions(quiz:Quiz) {
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
                 questions.postValue(interactors.getQuestions(quiz))

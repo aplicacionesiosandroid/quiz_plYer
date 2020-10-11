@@ -67,20 +67,34 @@ class QuizEditorFragment : Fragment() {
 
         questionsRecyclerView.adapter = adapter
 
+        viewModel.quiz.observe(viewLifecycleOwner, Observer {
 
-        viewModel.quizAndQuestionsMediatedPair.observe(viewLifecycleOwner, Observer {
-            if (it == null) {
-                //null is returned on purpose here, not all data ready!
-            } else {
-                quizTitle.setText(it.first.title)
-                quizDescription.setText(it.first.description)
+            quizTitle.setText(it.title)
+            quizDescription.setText(it.description)
 
-                if (it.second.isNotEmpty()) {
-                    emptyQuestionsLabel.visibility = View.GONE
-                }
-                adapter.update(it.second)
-            }
+            viewModel.loadQuizQuestions(it)
         })
+
+        viewModel.questions.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty()) {
+                emptyQuestionsLabel.visibility = View.GONE
+            }
+            adapter.update(it)
+        })
+
+//        viewModel.quizAndQuestionsMediatedPair.observe(viewLifecycleOwner, Observer {
+//            if (it == null) {
+//                //null is returned on purpose here, not all data ready!
+//            } else {
+//                quizTitle.setText(it.first.title)
+//                quizDescription.setText(it.first.description)
+//
+//                if (it.second.isNotEmpty()) {
+//                    emptyQuestionsLabel.visibility = View.GONE
+//                }
+//                adapter.update(it.second)
+//            }
+//        })
 
         viewModel.getOpenQuizAndQuestions()
 
