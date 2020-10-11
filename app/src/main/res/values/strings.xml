@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Quiz Player</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="nav_header_title">Quiz Creator &amp; Tester</string>
+    <string name="nav_header_subtitle">Create and play tests</string>
+    <string name="nav_header_desc">Navigation header Image</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_admin">Admin</string>
+    <string name="menu_tester">Tester</string>
+    <string name="intro_view_text">Please use the Drawer menu to Add or Play some Tests!</string>
+    <string name="admin_empty_quizes">You have not created any Quizzes yet!\n\nUse the floating action button to add a new one!</string>
+    <string name="quiz_edit_title_hint">Type the quiz label here</string>
+    <string name="quiz_title">Quiz Title</string>
+    <string name="quiz_description">Quiz Description</string>
+    <string name="delete_quiz">Delete Quiz</string>
+    <string name="quiz_questions">Quiz Questions</string>
+    <string name="add_question">Add Question</string>
+    <string name="update_quiz_and_close">Update Quiz and close</string>
+    <string name="empty_questions">This quiz does not have any question yet!\n\nPlease add some!</string>
+    <string name="update_question_and_close">Update Question And Close</string>
+    <string name="question_title">Question Title</string>
+    <string name="question_description">Question Description</string>
+    <string name="single">Single</string>
+    <string name="multiple">Multiple</string>
+    <string name="answer_is">Answer is</string>
+    <string name="delete_question">Delete Question</string>
+    <string name="answer_hint">Fill in the Answer here</string>
+    <string name="empty_quizes_to_test">You do not have any quizes yet! Use the Admin to create some ;)</string>
+    <string name="start_quiz">Start Quiz</string>
+    <string name="continue_quiz">Continue Quiz</string>
+    <string name="continue_quiz_from">You will continue this test from Question %d</string>
+    <string name="question_num_out_of">%d / %d</string>
+    <string name="next_question">Next Question</string>
+    <string name="check_answer">Check Answer</string>
+    <string name="test_ended">Finish Test</string>
+</resources>
