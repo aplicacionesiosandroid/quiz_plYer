@@ -2,6 +2,25 @@
 
 ## Research / Exercise on Android Jetpack components and CLEAN architecture
 
+## Intro
+
+A Single Activity / Multi Fragment approach (fully rotatable) using:
+
+1.  Google's Jetpack Navigation and its Navigation Graph (similar to a storyboard), NavHost container
+    and NavController for easy semi automatic fragment management without having to manually use the 
+    fragment manager for fragment replacement and so on
+    
+2.  Jetpack's SQlite database Rooms
+
+3.  Fragments get their state via their viewmodels and the associated data stores
+    no need for passing arguments/bundles between fragments and returning values
+    
+4.  LiveData is used to propagate changes from the viewmodel to fragment observers
+
+5.  CLEAN based architecture    
+
+## Project Structure and notes
+
 The architecture is based (and extended) on Ivan Kušt's article on Android and CLEAN arch (raywenderlich.com)
 
 The application is split in two modules:
