@@ -45,28 +45,33 @@ class AdminQuizListFragment : Fragment () {
         viewModel = ViewModelProviders.of(this, QuizPlayerViewModelFactory)
             .get(AdminQuizListViewModel::class.java)
 
-
         val adapter = AdminQuizListAdapter() {
-
             //Adapter click handler
-            viewModel.setOpenQuiz(it)
-            mainActivityDelegate.openQuizForEditing(it)
+            viewModel.setOpenQuizAndNavigate(it)
         }
         quizRecyclerView.adapter = adapter
-
 
         viewModel.quizzes.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty()) {
                 emptyQuizesLabel.visibility = View.GONE
+            } else {
+                emptyQuizesLabel.visibility = View.VISIBLE
             }
-            adapter.update(it) }
-        )
-        viewModel.loadQuizzes()
+            adapter.update(it)
+        })
+
+        viewModel.navigateToQuizEvent.observe(viewLifecycleOwner, Observer {
+            it.getContentIfNotHandled()?.let { // Only proceed if the event has never been handled
+                mainActivityDelegate.openQuizForEditing()
+            }
+        })
 
         fab.setOnClickListener {
             viewModel.addQuiz()
-//            startActivityForResult(createOpenIntent(), READ_REQUEST_CODE)
         }
+
+        viewModel.loadQuizzes()
+
     }
 
 }

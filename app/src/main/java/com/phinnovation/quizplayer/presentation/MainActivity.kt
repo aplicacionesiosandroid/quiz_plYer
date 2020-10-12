@@ -11,7 +11,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.phinnovation.core.domain.Question
-import com.phinnovation.core.domain.Quiz
 import com.phinnovation.quizplayer.R
 import com.phinnovation.quizplayer.presentation.utils.FragmentReceiveOnBack
 import kotlinx.android.synthetic.main.activity_main.*
@@ -69,10 +68,7 @@ class MainActivity : AppCompatActivity(), MainActivityDelegate {
     }
 
 
-    override fun openQuizForEditing(quiz: Quiz) {
-
-        Log.d("MAin activity", "openQuizForEditing caled: $quiz")
-
+    override fun openQuizForEditing() {
         navController.navigate(R.id.action_adminListFragment_to_quizEditorFragment)
     }
 
