@@ -6,7 +6,6 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import com.phinnovation.quizplayer.R
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModelFactory
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
@@ -59,60 +58,46 @@ class QuizEditorFragment : Fragment() {
 
         val adapter = QuizEditorQuestionListAdapter() {
             //Adapter click handler
-
-            viewModel.updateQuiz(quizTitle.text.toString(), quizDescription.text.toString())
-            viewModel.setOpenQuestion(it)
-            mainActivityDelegate.openQuestionForEditing(it)
+            viewModel.updateQuizPrepareToOpenQuestion(quizTitle.text.toString(), quizDescription.text.toString(), it)
         }
-
         questionsRecyclerView.adapter = adapter
 
         viewModel.quiz.observe(viewLifecycleOwner, Observer {
-
             quizTitle.setText(it.title)
             quizDescription.setText(it.description)
-
-            viewModel.loadQuizQuestions(it)
         })
 
         viewModel.questions.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty()) {
                 emptyQuestionsLabel.visibility = View.GONE
+            } else {
+                emptyQuestionsLabel.visibility = View.VISIBLE
             }
+
             adapter.update(it)
         })
 
-//        viewModel.quizAndQuestionsMediatedPair.observe(viewLifecycleOwner, Observer {
-//            if (it == null) {
-//                //null is returned on purpose here, not all data ready!
-//            } else {
-//                quizTitle.setText(it.first.title)
-//                quizDescription.setText(it.first.description)
-//
-//                if (it.second.isNotEmpty()) {
-//                    emptyQuestionsLabel.visibility = View.GONE
-//                }
-//                adapter.update(it.second)
-//            }
-//        })
-
-        viewModel.getOpenQuizAndQuestions()
-
         updateButton.setOnClickListener {
-
-            viewModel.quizUpdated.observe(viewLifecycleOwner, Observer {
-                this.findNavController().navigateUp()
-                viewModel.quizUpdated.removeObservers(viewLifecycleOwner)
-            })
-
-            viewModel.updateQuiz(quizTitle.text.toString(), quizDescription.text.toString())
+            viewModel.updateQuizAndClose(quizTitle.text.toString(), quizDescription.text.toString())
         }
-
 
         addQuestion.setOnClickListener {
             viewModel.addQuestion();
         }
 
+        viewModel.navigateUpEvent.observe(viewLifecycleOwner, Observer {
+            it.getContentIfNotHandled()?.let { // Only proceed if the event has never been handled
+                mainActivityDelegate.continueWithBack()
+            }
+        })
+
+        viewModel.navigateToQuestionEvent.observe(viewLifecycleOwner, Observer {
+            it.getContentIfNotHandled()?.let { // Only proceed if the event has never been handled
+                mainActivityDelegate.openQuestionForEditing()
+            }
+        })
+
+        viewModel.getOpenQuizAndLoadQuestions()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -122,15 +107,13 @@ class QuizEditorFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.action_delete_quiz -> {
-                viewModel.deleteQuiz()
-                this.findNavController().navigateUp()
-
-                return true;
+                viewModel.deleteQuizAndClose()
+                true;
             }
             else -> {
-                return super.onOptionsItemSelected(item)
+                super.onOptionsItemSelected(item)
             }
         }
     }
