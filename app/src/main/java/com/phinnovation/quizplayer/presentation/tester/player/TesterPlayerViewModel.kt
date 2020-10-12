@@ -1,13 +1,13 @@
 package com.phinnovation.quizplayer.presentation.tester.player
 
 import android.app.Application
-import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.phinnovation.core.domain.Question
-import com.phinnovation.core.domain.Quiz
 import com.phinnovation.core.domain.QuizState
 import com.phinnovation.quizplayer.framework.Interactors
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModel
+import com.phinnovation.quizplayer.presentation.utils.Event
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -16,93 +16,81 @@ import kotlinx.coroutines.withContext
 class TesterPlayerViewModel(application: Application, interactors: Interactors) :
     QuizPlayerViewModel(application, interactors) {
 
-    private var quiz: MutableLiveData<Quiz> = MutableLiveData()
-    private val questions: MutableLiveData<List<Question>> = MutableLiveData()
+    private val _answerIsCorrectOrNot = MutableLiveData<Boolean>()
+    private var _showNextOrFinishEvent = MutableLiveData<Event<Boolean>>()
+    private val _answerCheckedHasMoreQuestions = MutableLiveData<Boolean>()
 
-    var answerChecked: MutableLiveData<Boolean> = MutableLiveData()
-    var answerCorrect: MutableLiveData<Boolean> = MutableLiveData()
+    val answerCheckedHasMoreQuestionsEvent: LiveData<Boolean>
+        get() = _answerCheckedHasMoreQuestions
 
-    var showEndButton: MutableLiveData<Boolean> = MutableLiveData()
+    val answerIsCorrectEvent: LiveData<Boolean>
+        get() = _answerIsCorrectOrNot
 
-    val quizAndQuestionsMediatedPair: MediatorLiveData<Pair<Quiz, List<Question>>> =
-        MediatorLiveData()
-
-    init {
-        quizAndQuestionsMediatedPair.addSource(quiz) { _ ->
-            quizAndQuestionsMediatedPair.value = combineQuizAndQuestions(quiz, questions)
-        }
-
-        quizAndQuestionsMediatedPair.addSource(questions) { _ ->
-            quizAndQuestionsMediatedPair.value = combineQuizAndQuestions(quiz, questions)
-        }
-
-    }
-
-    fun getOpenQuizAndQuestions() {
-        quiz.postValue(interactors.getOpenQuiz())
-    }
-
-//    fun setQuestionChecked(correct: Boolean , hasMore:Boolean) {
-//        answerChecked.value = true
-//
-//        if (hasMore) {
-//            answerCorrect.value = correct
-//        } else {
-//            showEndButton.value = true
-//        }
-//    }
+    val showNextOrFinishEvent: LiveData<Event<Boolean>>
+        get() = _showNextOrFinishEvent
 
 
-    private fun combineQuizAndQuestions(
-        quiz: MutableLiveData<Quiz>,
-        questions: MutableLiveData<List<Question>>
-    ): Pair<Quiz, List<Question>>? {
-        val qz = quiz.value
-        val qs = questions.value
+    var currentQuestionItsIndexAndMaxQuestionsTriple:MutableLiveData<Triple<Question,Int,Int>> = MutableLiveData()
 
-        if (qz == null || qs == null) {
-            if (qz != null) {
-                loadQuizQuestions(qz)
-            }
-            return null
-        }
+    fun getCurrentQuestionToPlay() {
+        val quiz = interactors.getOpenQuiz()
 
-        return Pair(qz, qs)
-    }
-
-    private fun loadQuizQuestions(quiz: Quiz) {
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
-                questions.postValue(interactors.getQuestions(quiz))
+                val questions = interactors.getQuestions(quiz)
+                currentQuestionItsIndexAndMaxQuestionsTriple.postValue(Triple<Question,Int,Int>(questions[quiz.lastSeenQuestion],quiz.lastSeenQuestion+1,questions.size))
             }
         }
     }
 
+    fun checkQuestionAndShowNextOrFinish(userAnswer:String) {
+        val quiz = interactors.getOpenQuiz()
 
-    fun updateQuizAnsweredQuestionAndMoveToNextOrFinish(quiz:Quiz, correctAnswer:Boolean, hasMore:Boolean) {
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
+
+                val questions = interactors.getQuestions(quiz)
+
+                if (userAnswer == questions[quiz.lastSeenQuestion].correctAnswer) {
+                    _answerIsCorrectOrNot.postValue(true)
+                } else {
+                    _answerIsCorrectOrNot.postValue(false)
+                }
+
+                var hasMoreQuestions = true
+
+                if (quiz.lastSeenQuestion +1 >= questions.size) { //last question update state to finished
+                    hasMoreQuestions = false
+                }
+
+                _answerCheckedHasMoreQuestions.postValue(hasMoreQuestions)
+            }
+        }
+    }
+
+    fun updateQuizAnsweredQuestionAndContinue() {
+        val quiz = interactors.getOpenQuiz()
+
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+
+                val questions = interactors.getQuestions(quiz)
+
                 quiz.lastSeenQuestion++
 
-                if (!hasMore) { //last question update state to finished
+                var showNext = true
+
+                if (quiz.lastSeenQuestion >= questions.size) { //last question update state to finished
                     quiz.state = QuizState.FINISHED
+                    showNext = false
                 }
 
                 interactors.updateQuiz(quiz)
 
-                answerCorrect.postValue(correctAnswer)
-
-                if (hasMore) {
-                    answerChecked.postValue(true)
-                } else {
-                    showEndButton.postValue(true)
-                }
+                _showNextOrFinishEvent.postValue(Event(showNext))
             }
         }
     }
 
 
-//    fun setOpenQuestion(question: Question) {
-//        interactors.setOpenQuestion (question)
-//    }
 }

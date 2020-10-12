@@ -37,4 +37,6 @@
     <string name="next_question">Next Question</string>
     <string name="check_answer">Check Answer</string>
     <string name="test_ended">Finish Test</string>
+    <string name="answer_is_correct">Correct Answer!</string>
+    <string name="answer_is_wrong">Wrong Answer!</string>
 </resources>

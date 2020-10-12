@@ -1,19 +1,16 @@
 package com.phinnovation.quizplayer.presentation.tester.player
 
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.phinnovation.core.domain.Question
 import com.phinnovation.core.domain.QuestionType
-import com.phinnovation.core.domain.Quiz
 import com.phinnovation.quizplayer.R
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModelFactory
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
@@ -27,10 +24,9 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
 
     private lateinit var mainActivityDelegate: MainActivityDelegate
 
-    private lateinit var quiz:Quiz
-    private lateinit var questions:List<Question>
-
-    private lateinit var currentQuestion:Question
+//    private lateinit var quiz:Quiz
+//    private lateinit var questions:List<Question>
+//    private lateinit var currentQuestion:Question
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,91 +50,100 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        RadioGroupCheckListener.makeGroup(radio_1, radio_2, radio_3, radio_4)
+
         viewModel = ViewModelProviders.of(this, QuizPlayerViewModelFactory)
             .get(TesterPlayerViewModel::class.java)
 
-        viewModel.quizAndQuestionsMediatedPair.observe(viewLifecycleOwner, Observer {
+        viewModel.currentQuestionItsIndexAndMaxQuestionsTriple.observe(viewLifecycleOwner, {
 
-            if (it == null) { //first call is null, questions not ready
-                return@Observer
+            val question = it.first
+            val currentQuestionHumanReadable = it.second
+            val maxQuestions = it.third
+
+            quizQuestionNumber.text = getString(R.string.question_num_out_of,currentQuestionHumanReadable,maxQuestions)
+            quizTitle.text = question.title
+            quizDescription.text = question.description
+
+            answer_1.text = question.choiceTitle1
+            answer_2.text = question.choiceTitle2
+            answer_3.text = question.choiceTitle3
+            answer_4.text = question.choiceTitle4
+
+            enableRadiosForTrueOrCheckboxes(question.type == QuestionType.SINGLE_CHOICE)
+        })
+
+        viewModel.getCurrentQuestionToPlay()
+
+        viewModel.answerCheckedHasMoreQuestionsEvent.observe(viewLifecycleOwner, { hasMore ->
+            if (hasMore) {
+                nextQuestionButton.text = getString(R.string.next_question)
+            } else {
+                nextQuestionButton.text = getString(R.string.test_ended)
             }
-
-            RadioGroupCheckListener.makeGroup(radio_1, radio_2, radio_3, radio_4);
-
-            quiz = it.first
-            questions = it.second
-
-            //sanity check if current question > questions.size exit early
-            if (quiz.lastSeenQuestion >= questions.size) {
-                return@Observer
-            }
-
-            currentQuestion = questions[quiz.lastSeenQuestion]
-
-            quizQuestionNumber.text = getString(R.string.question_num_out_of,quiz.lastSeenQuestion+1,questions.size)
-            quizTitle.text = questions[quiz.lastSeenQuestion].title
-            quizDescription.text = questions[quiz.lastSeenQuestion].description
-
-            answer_1.text = currentQuestion.choiceTitle1
-            answer_2.text = currentQuestion.choiceTitle2
-            answer_3.text = currentQuestion.choiceTitle3
-            answer_4.text = currentQuestion.choiceTitle4
-
-            enableRadiosForTrueOrCheckboxes(currentQuestion.type == QuestionType.SINGLE_CHOICE)
-
         })
 
-        viewModel.getOpenQuizAndQuestions()
-
-        viewModel.answerChecked.observe(viewLifecycleOwner, Observer {
-            nextQuestionButton.text = getString(R.string.next_question)
-        })
-
-        viewModel.showEndButton.observe(viewLifecycleOwner, Observer {
-            nextQuestionButton.text = getString(R.string.test_ended)
-        })
-
-        viewModel.answerCorrect.observe(viewLifecycleOwner, Observer {
+        viewModel.answerIsCorrectEvent.observe(viewLifecycleOwner, { wasCorrect ->
             answerText.visibility = View.VISIBLE
 
-            if (it) {
+            if (wasCorrect) {
                 answerText.setTextColor(Color.GREEN)
-                answerText.text = "You are correct!"
+                answerText.text =  getString(R.string.answer_is_correct)
             } else {
                 answerText.setTextColor(Color.RED)
-                answerText.text = "Wrong Answer"
+                answerText.text =  getString(R.string.answer_is_wrong)
             }
         })
 
+        viewModel.showNextOrFinishEvent.observe(viewLifecycleOwner, {
+            it.getContentIfNotHandled()?.let { hasMore ->
+                if (hasMore) {
+                    mainActivityDelegate.continueQuizShowNextQuestion()
+                } else {
+                    mainActivityDelegate.continueWithBack()
+                }
+            }
+        })
 
         nextQuestionButton.setOnClickListener {
 
-            if (viewModel.showEndButton.value == true) {
-                mainActivityDelegate.continueWithBack()
-            } else {
-                if (viewModel.answerChecked.value == true) {
-                    mainActivityDelegate.continueQuizShowNextQuestion()
+            viewModel.answerCheckedHasMoreQuestionsEvent.value?.let {
+
+                //if the answer is already checked, move on
+                viewModel.updateQuizAnsweredQuestionAndContinue()
+
+            } ?: run {
+
+                //else send the answer for checking
+
+                var questionType = QuestionType.MULTI_CHOICE
+
+                //we could get this from the model, or the observable vars but is as simple as this:
+                if (radio_1.isVisible) {
+                    questionType = QuestionType.SINGLE_CHOICE
+                }
+
+                val answer = getUserAnswerFromUI(questionType)
+
+                if (answer == "-1" || answer == "0,0,0,0") { //not selected answer
+                    showErrorSelectionDialog()
                 } else {
-                    //check that an answer exist
-                    val answer = findAnswerFromUI()
-
-                    if (answer == "" || answer == "0,0,0,0") { //not selected answer
-                        showErrorSelectionDialog()
-                    } else {
-
-                        //increment the quiz.lastSeenQuestion and show continue or end button
-                        viewModel.updateQuizAnsweredQuestionAndMoveToNextOrFinish(quiz,answer == currentQuestion.correctAnswer,(quiz.lastSeenQuestion + 1) < questions.size)
-                    }
+                    //increment the quiz.lastSeenQuestion and show continue or end button
+                    viewModel.checkQuestionAndShowNextOrFinish(answer)
                 }
             }
         }
     }
 
-    private fun findAnswerFromUI(): String {
+    override fun onBackPressed() {
+        showCancelTestAlert()
+    }
 
-        var result:String = "" ;
+    private fun getUserAnswerFromUI(questionType: QuestionType): String {
 
-        if (currentQuestion.type == QuestionType.SINGLE_CHOICE) {
+        var result:String
+
+        if (questionType  == QuestionType.SINGLE_CHOICE) {
 
             var selectedIndex = -1
 
@@ -154,10 +159,7 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
             if (radio_4.isChecked)
                 selectedIndex = 3
 
-            if (selectedIndex != -1) //nothing selected
-            {
-                result = "$selectedIndex"
-            }
+            result = "$selectedIndex"
         } else {
 
             result = if (checkbox_1.isChecked) {
@@ -210,17 +212,14 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
         }
     }
 
-    override fun onBackPressed() {
-        showCancelTestAlert()
-    }
 
     private fun showCancelTestAlert() {
         return AlertDialog.Builder(requireContext())
             .setTitle("Warning!")
             .setMessage("Are you sure you want to exit your test?\n\n(You will be able to continue from this question)")
-            .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialogInterface, id ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 mainActivityDelegate.continueWithBack()
-            })
+            }
             .setNegativeButton(android.R.string.cancel,null)
             .create().show()
 
