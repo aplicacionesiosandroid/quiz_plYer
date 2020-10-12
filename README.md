@@ -36,9 +36,6 @@ A Single Activity / Multi Fragment approach (fully rotatable) using:
     a relevant interface, and the main activity when receiving back events always checks with its children 
     before continuing with the back action
 3.  In some views multiple live data objects are exposed from their viewmodels
-4.  As an exercise in some view models, instead of returning miltiple data sources, that become available on after the other,
-    a single (Pair<A,B>) is returned via a Mediator objects that combines 2 LiveData emitters into 1 and 
-    waits for both to be present before emitting its value   
 
 ## Project Structure and notes
 
@@ -181,6 +178,15 @@ Contains out MainActivity and its Delegate as well as all the screens of the app
     when an answer is checked, the user sees a correct/false message before continuing to the next question
     if the question answered was the last, the button shows end quiz instead of next question
     
+#### Testing
+
+The androidTest folder contains 2 classes:
+
+1. RawRoomsAndDaosInstrumentedTest
+2. RepositoriesInstrumentedTest
+
+The first tests the raw daos used by the Room Database, while the second tests the quiz and question 
+repositories (in memory daos are used)
 
              
 
