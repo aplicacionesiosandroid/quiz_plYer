@@ -216,7 +216,7 @@ class TesterPlayerFragment : Fragment(), FragmentReceiveOnBack {
 
     private fun showCancelTestAlert() {
         return AlertDialog.Builder(requireContext())
-            .setTitle("Warning!")
+            .setTitle("Warning!") 
             .setMessage("Are you sure you want to exit your test?\n\n(You will be able to continue from this question)")
             .setPositiveButton(android.R.string.ok) { _, _ ->
 
