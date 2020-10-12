@@ -20,10 +20,10 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
     private var _showNextOrFinishEvent = MutableLiveData<Event<Boolean>>()
     private val _answerCheckedHasMoreQuestions = MutableLiveData<Boolean>()
 
-    val answerCheckedHasMoreQuestionsEvent: LiveData<Boolean>
+    val answerCheckedHasMoreQuestions: LiveData<Boolean>
         get() = _answerCheckedHasMoreQuestions
 
-    val answerIsCorrectEvent: LiveData<Boolean>
+    val answerIsCorrect: LiveData<Boolean>
         get() = _answerIsCorrectOrNot
 
     val showNextOrFinishEvent: LiveData<Event<Boolean>>
@@ -92,5 +92,25 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
         }
     }
 
+    fun updateQuizAnsweredQuestionAndNavigateUp() {
+        val quiz = interactors.getOpenQuiz()
+
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+
+                val questions = interactors.getQuestions(quiz)
+
+                quiz.lastSeenQuestion++
+
+                if (quiz.lastSeenQuestion >= questions.size) { //last question update state to finished
+                    quiz.state = QuizState.FINISHED
+                }
+
+                interactors.updateQuiz(quiz)
+
+                _showNextOrFinishEvent.postValue(Event(false))
+            }
+        }
+    }
 
 }

@@ -18,7 +18,7 @@ import com.phinnovation.quizplayer.presentation.utils.FragmentReceiveOnBack
 import com.phinnovation.quizplayer.presentation.utils.RadioGroupCheckListener
 import kotlinx.android.synthetic.main.fragment_tester_player.*
 
-class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
+class TesterPlayerFragment : Fragment(), FragmentReceiveOnBack {
 
     private lateinit var viewModel: TesterPlayerViewModel
 
@@ -61,7 +61,8 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
             val currentQuestionHumanReadable = it.second
             val maxQuestions = it.third
 
-            quizQuestionNumber.text = getString(R.string.question_num_out_of,currentQuestionHumanReadable,maxQuestions)
+            quizQuestionNumber.text =
+                getString(R.string.question_num_out_of, currentQuestionHumanReadable, maxQuestions)
             quizTitle.text = question.title
             quizDescription.text = question.description
 
@@ -75,7 +76,7 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
 
         viewModel.getCurrentQuestionToPlay()
 
-        viewModel.answerCheckedHasMoreQuestionsEvent.observe(viewLifecycleOwner, { hasMore ->
+        viewModel.answerCheckedHasMoreQuestions.observe(viewLifecycleOwner, { hasMore ->
             if (hasMore) {
                 nextQuestionButton.text = getString(R.string.next_question)
             } else {
@@ -83,15 +84,15 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
             }
         })
 
-        viewModel.answerIsCorrectEvent.observe(viewLifecycleOwner, { wasCorrect ->
+        viewModel.answerIsCorrect.observe(viewLifecycleOwner, { wasCorrect ->
             answerText.visibility = View.VISIBLE
 
             if (wasCorrect) {
                 answerText.setTextColor(Color.GREEN)
-                answerText.text =  getString(R.string.answer_is_correct)
+                answerText.text = getString(R.string.answer_is_correct)
             } else {
                 answerText.setTextColor(Color.RED)
-                answerText.text =  getString(R.string.answer_is_wrong)
+                answerText.text = getString(R.string.answer_is_wrong)
             }
         })
 
@@ -107,7 +108,7 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
 
         nextQuestionButton.setOnClickListener {
 
-            viewModel.answerCheckedHasMoreQuestionsEvent.value?.let {
+            viewModel.answerCheckedHasMoreQuestions.value?.let {
 
                 //if the answer is already checked, move on
                 viewModel.updateQuizAnsweredQuestionAndContinue()
@@ -141,9 +142,9 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
 
     private fun getUserAnswerFromUI(questionType: QuestionType): String {
 
-        var result:String
+        var result: String
 
-        if (questionType  == QuestionType.SINGLE_CHOICE) {
+        if (questionType == QuestionType.SINGLE_CHOICE) {
 
             var selectedIndex = -1
 
@@ -218,9 +219,17 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
             .setTitle("Warning!")
             .setMessage("Are you sure you want to exit your test?\n\n(You will be able to continue from this question)")
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                mainActivityDelegate.continueWithBack()
+
+                viewModel.answerIsCorrect.value?.let {
+                    viewModel.updateQuizAnsweredQuestionAndNavigateUp()
+                } ?: run {
+                    mainActivityDelegate.continueWithBack()
+                }
+                //check if the user has answered the question, if yes save and return
+
+//                else //elsejust return
             }
-            .setNegativeButton(android.R.string.cancel,null)
+            .setNegativeButton(android.R.string.cancel, null)
             .create().show()
 
     }
@@ -230,7 +239,7 @@ class TesterPlayerFragment : Fragment (), FragmentReceiveOnBack  {
         return AlertDialog.Builder(requireContext())
             .setTitle("Error!")
             .setMessage("At least one radio button or check box must be selected to save a question!")
-            .setPositiveButton(android.R.string.ok,null)
+            .setPositiveButton(android.R.string.ok, null)
             .create().show()
     }
 
