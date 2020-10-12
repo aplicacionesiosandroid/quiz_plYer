@@ -45,13 +45,13 @@ class TesterQuizIntroFragment : Fragment() {
             .get(TesterQuizIntroViewModel::class.java)
 
         viewModel.quiz.observe(viewLifecycleOwner, Observer {
-            quizTitle.setText(it.title)
-            quizDescription.setText(it.description)
+            quizTitle.text = it.title
+            quizDescription.text = it.description
 
             if (it.state != QuizState.NOT_STARTED) {
                 startQuizButton.setText(R.string.continue_quiz)
                 continueQuizText.visibility = View.VISIBLE
-                continueQuizText.setText(getString(R.string.continue_quiz_from,it.lastSeenQuestion+1))
+                continueQuizText.text = getString(R.string.continue_quiz_from,it.lastSeenQuestion+1)
             }
         })
 
@@ -61,7 +61,7 @@ class TesterQuizIntroFragment : Fragment() {
             viewModel.updateQuizStatusToStarted()
         }
 
-        viewModel.quizUpdated.observe(viewLifecycleOwner, Observer {
+        viewModel.navigateToQuizPlayScreenEvent.observe(viewLifecycleOwner, Observer {
             mainActivityDelegate.openQuizForPlayTest()
         })
 
