@@ -177,7 +177,7 @@ Contains out MainActivity and its Delegate as well as all the screens of the app
     no checks for empty answer texts is currently done, but here would be the place to do so 
                
 
-##### tester package
+##### User / Tester package
 
 1.  list screen: similar to admin list but shows icons depending on the state of the quiz:
     enum class QuizState (val code:Int){
