@@ -146,7 +146,7 @@ Contains Database and Rooms related needed classes, such as the Question and Qui
 
 Contains out MainActivity and its Delegate as well as all the screens of the application separated in the following packages:
 
-0.  application: the main App, its viewModel + Factory 
+0.  application: the main App, its viewModel + Factory
 1.  admin: admin related screens
 2.  home: contains the initial/home fragment the user sees
 3.  tester: quiz play/test related screens
@@ -198,16 +198,3 @@ Contains out MainActivity and its Delegate as well as all the screens of the app
     screen responsible for running a quiz
     when an answer is checked, the user sees a correct/false message before continuing to the next question
     if the question answered was the last, the button shows end quiz instead of next question
-
-#### Testing
-
-The androidTest folder contains 2 classes:
-
-1. RawRoomsAndDaosInstrumentedTest
-2. RepositoriesInstrumentedTest
-
-The first tests the raw daos used by the Room Database, while the second tests the quiz and question
-repositories (in memory daos are used)
-
-             
-
