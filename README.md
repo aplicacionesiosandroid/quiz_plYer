@@ -109,14 +109,34 @@ Contains implementations of interfaces defined in the data layer.
 
 As an example RoomQuizDataSource is a concrete implementation of QuizDataSource using Google's Jetpack SQLite based component Rooms
 
-We also need a way to provide the Data Sources to the data layer (usually done with dependency injection)
+We also need a way to provide the Data Sources to the data layer,
 
-To keep things simple we manually implement them in Interactors class
+Initially instead of Dependency Injection, the application, its repositories and Interactors were
+'injected' inside the QuizPlayerApplication class, where its repositories were initialized and the
+Interactors class was 'injected' to the  QuizPlayerViewModelFactory class which is responsible for
+creating our QuizPlayerViewModel instances.
 
-and we will be using this class from out view models in order to access its interctors
+Dagger2 in now used to provide data sources to the data layer, for more info check the classes inside
+the package dagger, where a number of modules are declared and made available to the app via the
+AppComponent class.
 
-In QuizPlayerApplication, the repositories are initialized and the Interactors class is 'injected'
-in our QuizPlayerViewModelFactory class which is responsible for creating our QuizPlayerViewModel instances
+Now, inside the Fragment implementations, the viewModel factory is injected as here:
+```
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+```
+
+and the viewModel is provided via its factory:
+
+```
+    viewModel = ViewModelProvider(this, factory)[QuestionEditorViewModel::class.java]
+```
+
+injection is as simple as this (inside the fragments, onCreate):
+
+```
+    (activity?.application as QuizPlayerApplication).quizPlayerComponent.inject(this)
+```
 
 ##### database packages
 
@@ -126,6 +146,7 @@ Contains Database and Rooms related needed classes, such as the Question and Qui
 
 Contains out MainActivity and its Delegate as well as all the screens of the application separated in the following packages:
 
+0.  application: the main App, its viewModel + Factory 
 1.  admin: admin related screens
 2.  home: contains the initial/home fragment the user sees
 3.  tester: quiz play/test related screens
@@ -177,7 +198,7 @@ Contains out MainActivity and its Delegate as well as all the screens of the app
     screen responsible for running a quiz
     when an answer is checked, the user sees a correct/false message before continuing to the next question
     if the question answered was the last, the button shows end quiz instead of next question
-    
+
 #### Testing
 
 The androidTest folder contains 2 classes:
@@ -185,7 +206,7 @@ The androidTest folder contains 2 classes:
 1. RawRoomsAndDaosInstrumentedTest
 2. RepositoriesInstrumentedTest
 
-The first tests the raw daos used by the Room Database, while the second tests the quiz and question 
+The first tests the raw daos used by the Room Database, while the second tests the quiz and question
 repositories (in memory daos are used)
 
              
