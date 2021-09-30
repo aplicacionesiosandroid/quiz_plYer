@@ -9,17 +9,30 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.phinnovation.quizplayer.R
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModelFactory
+import com.phinnovation.quizplayer.framework.application.QuizPlayerApplication
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
+import com.phinnovation.quizplayer.presentation.tester.intro.TesterQuizIntroViewModel
 import kotlinx.android.synthetic.main.fragment_tester_list.*
+import javax.inject.Inject
 
 class TesterQuizListFragment : Fragment() {
 
     private lateinit var mainActivityDelegate: MainActivityDelegate
 
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+
     private lateinit var viewModel: TesterQuizListViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        (activity?.application as QuizPlayerApplication).quizPlayerComponent.inject(this)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -42,8 +55,7 @@ class TesterQuizListFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this, QuizPlayerViewModelFactory)
-            .get(TesterQuizListViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory)[TesterQuizListViewModel::class.java]
 
         val adapter = TesterQuizListAdapter() {
             //Adapter click handler

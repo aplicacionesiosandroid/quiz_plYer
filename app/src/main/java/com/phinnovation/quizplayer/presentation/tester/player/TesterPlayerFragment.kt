@@ -9,24 +9,33 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.phinnovation.core.domain.QuestionType
 import com.phinnovation.quizplayer.R
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModelFactory
+import com.phinnovation.quizplayer.framework.application.QuizPlayerApplication
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
+import com.phinnovation.quizplayer.presentation.tester.list.TesterQuizListViewModel
 import com.phinnovation.quizplayer.presentation.utils.FragmentReceiveOnBack
 import com.phinnovation.quizplayer.presentation.utils.RadioGroupCheckListener
 import kotlinx.android.synthetic.main.fragment_tester_player.*
+import javax.inject.Inject
 
 class TesterPlayerFragment : Fragment(), FragmentReceiveOnBack {
 
     private lateinit var viewModel: TesterPlayerViewModel
 
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+
     private lateinit var mainActivityDelegate: MainActivityDelegate
 
-//    private lateinit var quiz:Quiz
-//    private lateinit var questions:List<Question>
-//    private lateinit var currentQuestion:Question
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        (activity?.application as QuizPlayerApplication).quizPlayerComponent.inject(this)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -52,8 +61,7 @@ class TesterPlayerFragment : Fragment(), FragmentReceiveOnBack {
 
         RadioGroupCheckListener.makeGroup(radio_1, radio_2, radio_3, radio_4)
 
-        viewModel = ViewModelProviders.of(this, QuizPlayerViewModelFactory)
-            .get(TesterPlayerViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory)[TesterPlayerViewModel::class.java]
 
         viewModel.currentQuestionItsIndexAndMaxQuestionsTriple.observe(viewLifecycleOwner, {
 

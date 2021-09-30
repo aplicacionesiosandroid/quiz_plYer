@@ -5,21 +5,35 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.phinnovation.core.domain.Question
 import com.phinnovation.core.domain.QuestionType
 import com.phinnovation.quizplayer.R
+import com.phinnovation.quizplayer.framework.QuizPlayerViewModel
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModelFactory
+import com.phinnovation.quizplayer.framework.application.QuizPlayerApplication
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
 import com.phinnovation.quizplayer.presentation.utils.RadioGroupCheckListener
 import kotlinx.android.synthetic.main.fragment_question_editor.*
+import javax.inject.Inject
 
 class QuestionEditorFragment : Fragment () {
 
     private lateinit var mainActivityDelegate: MainActivityDelegate
 
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+
     private lateinit var viewModel: QuestionEditorViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        (activity?.application as QuizPlayerApplication).quizPlayerComponent.inject(this)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -39,20 +53,12 @@ class QuestionEditorFragment : Fragment () {
         return inflater.inflate(R.layout.fragment_question_editor, container, false)
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         RadioGroupCheckListener.makeGroup(radio_1, radio_2, radio_3, radio_4)
 
-        viewModel = ViewModelProviders.of(this, QuizPlayerViewModelFactory)
-            .get(QuestionEditorViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory)[QuestionEditorViewModel::class.java]
 
         viewModel.question.observe(viewLifecycleOwner, { question ->
 
