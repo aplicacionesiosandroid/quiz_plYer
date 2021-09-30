@@ -18,8 +18,8 @@
         <action
             android:id="@+id/action_adminListFragment_to_quizEditorFragment"
             app:destination="@id/quizEditorFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/testerListFragment"
@@ -39,8 +39,8 @@
         <action
             android:id="@+id/action_quizEditorFragment_to_questionEditorFragment"
             app:destination="@id/questionEditorFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/questionEditorFragment"
@@ -66,8 +66,8 @@
         <action
             android:id="@+id/action_testerPlayerFragment_self"
             app:destination="@id/testerPlayerFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
             app:popUpTo="@id/testerListFragment" />
     </fragment>
 </navigation>
