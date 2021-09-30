@@ -8,13 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.phinnovation.core.domain.QuizState
 import com.phinnovation.quizplayer.R
-import com.phinnovation.quizplayer.framework.QuizPlayerViewModelFactory
-import com.phinnovation.quizplayer.framework.application.QuizPlayerApplication
+import com.phinnovation.quizplayer.presentation.application.QuizPlayerApplication
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
-import com.phinnovation.quizplayer.presentation.admin.quizlist.AdminQuizListViewModel
 import kotlinx.android.synthetic.main.fragment_tester_intro.*
 import javax.inject.Inject
 

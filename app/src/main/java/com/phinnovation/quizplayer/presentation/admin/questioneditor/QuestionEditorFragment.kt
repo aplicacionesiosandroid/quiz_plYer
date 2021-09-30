@@ -5,16 +5,12 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.phinnovation.core.domain.Question
 import com.phinnovation.core.domain.QuestionType
 import com.phinnovation.quizplayer.R
-import com.phinnovation.quizplayer.framework.QuizPlayerViewModel
-import com.phinnovation.quizplayer.framework.QuizPlayerViewModelFactory
-import com.phinnovation.quizplayer.framework.application.QuizPlayerApplication
+import com.phinnovation.quizplayer.presentation.application.QuizPlayerApplication
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
 import com.phinnovation.quizplayer.presentation.utils.RadioGroupCheckListener
 import kotlinx.android.synthetic.main.fragment_question_editor.*

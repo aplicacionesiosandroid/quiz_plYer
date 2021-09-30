@@ -1,4 +1,4 @@
-package com.phinnovation.quizplayer.framework.application
+package com.phinnovation.quizplayer.presentation.application
 
 import android.app.Application
 import com.phinnovation.quizplayer.framework.dagger.AppComponent
