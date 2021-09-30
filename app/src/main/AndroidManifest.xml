@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.phinnovation.quizplayer">
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-sdk android:targetSdkVersion="30" />
     <application
         android:name=".framework.QuizPlayerApplication"
         android:allowBackup="true"
@@ -18,5 +19,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
