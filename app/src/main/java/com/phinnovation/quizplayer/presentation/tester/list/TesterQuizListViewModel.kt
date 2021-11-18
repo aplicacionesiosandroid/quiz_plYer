@@ -3,12 +3,12 @@ package com.phinnovation.quizplayer.presentation.tester.list
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.phinnovation.core.domain.Quiz
 import com.phinnovation.core.domain.QuizState
 import com.phinnovation.quizplayer.framework.Interactors
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModel
 import com.phinnovation.quizplayer.presentation.utils.Event
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class TesterQuizListViewModel(application: Application, interactors: Interactors) :
@@ -30,7 +30,7 @@ class TesterQuizListViewModel(application: Application, interactors: Interactors
     val quizzes: MutableLiveData<List<Quiz>> = MutableLiveData()
 
     fun loadQuizzes() {
-        GlobalScope.launch {
+        viewModelScope.launch {
             quizzes.postValue(interactors.getQuizes())
         }
     }
@@ -40,7 +40,7 @@ class TesterQuizListViewModel(application: Application, interactors: Interactors
         if (quiz.state == QuizState.FINISHED) {
             _showQuizFinishedError.value = Event(true)
         } else {
-            GlobalScope.launch {
+            viewModelScope.launch {
                 val questions = interactors.getQuestions(quiz)
 
                 if (questions.isNotEmpty()) {

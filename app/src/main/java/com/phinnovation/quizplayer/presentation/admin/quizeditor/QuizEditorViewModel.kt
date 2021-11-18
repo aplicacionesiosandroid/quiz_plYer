@@ -3,15 +3,13 @@ package com.phinnovation.quizplayer.presentation.admin.quizeditor
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.phinnovation.core.domain.Question
 import com.phinnovation.core.domain.Quiz
 import com.phinnovation.quizplayer.framework.Interactors
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModel
 import com.phinnovation.quizplayer.presentation.utils.Event
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class QuizEditorViewModel (application: Application, interactors: Interactors):
         QuizPlayerViewModel(application,interactors) {
@@ -41,12 +39,10 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
             it.title = title ;
             it.description = desc ;
 
-            GlobalScope.launch {
-                withContext(Dispatchers.IO) {
-                    interactors.updateQuiz(it)
-                    setOpenQuestion(question)
-                    _navigateToQuestion.postValue(Event(true))
-                }
+            viewModelScope.launch {
+                interactors.updateQuiz(it)
+                setOpenQuestion(question)
+                _navigateToQuestion.postValue(Event(true))
             }
         }
     }
@@ -56,39 +52,32 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
             it.title = title ;
             it.description = desc ;
 
-            GlobalScope.launch {
-                withContext(Dispatchers.IO) {
-                    interactors.updateQuiz(it)
-                    _navigateUp.postValue(Event(true))
-                }
+            viewModelScope.launch {
+                interactors.updateQuiz(it)
+                _navigateUp.postValue(Event(true))
             }
         }
     }
 
     fun deleteQuizAndClose() {
         quiz.value?.let {
-            GlobalScope.launch {
-                withContext(Dispatchers.IO) {
-
-                    for (question in questions.value!!) {
-                        interactors.removeQuestion(it,question)
-                    }
-
-                    interactors.removeQuiz(it)
-                    _navigateUp.postValue(Event(true))
+            viewModelScope.launch {
+                for (question in questions.value!!) {
+                    interactors.removeQuestion(it,question)
                 }
+
+                interactors.removeQuiz(it)
+                _navigateUp.postValue(Event(true))
             }
         }
     }
 
     fun addQuestion() {
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                quiz.value?.let { interactors.addQuestion(it,
-                    Question(title = "New Question - Click to setup"))
-                }
+        viewModelScope.launch {
+            quiz.value?.let {
+                interactors.addQuestion(it, Question(title = "New Question - Click to setup"))
+                loadQuizQuestions(it)
             }
-            quiz.value?.let { loadQuizQuestions(it) }
         }
     }
 
@@ -97,10 +86,8 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
     }
 
     private fun loadQuizQuestions(quiz:Quiz) {
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                questions.postValue(interactors.getQuestions(quiz))
-            }
+        viewModelScope.launch {
+            questions.postValue(interactors.getQuestions(quiz))
         }
     }
 

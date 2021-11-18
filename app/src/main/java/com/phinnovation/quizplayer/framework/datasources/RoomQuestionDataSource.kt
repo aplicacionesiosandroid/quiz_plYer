@@ -10,9 +10,8 @@ import com.phinnovation.quizplayer.framework.database.QuizPlayerDatabase
 
 class RoomQuestionDataSource(val context: Context, qDao: QuestionDao? = null) : QuestionDataSource {
 
-    private val questionDao: QuestionDao = {
+    private val questionDao: QuestionDao =
         qDao ?: QuizPlayerDatabase.getInstance(context).questionDao()
-    }()
 
     override suspend fun add(quiz: Quiz, question: Question) {
         questionDao.addQuestion(

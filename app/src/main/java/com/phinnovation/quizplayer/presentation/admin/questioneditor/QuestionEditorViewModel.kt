@@ -3,15 +3,13 @@ package com.phinnovation.quizplayer.presentation.admin.questioneditor
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.phinnovation.core.domain.Question
 import com.phinnovation.core.domain.QuestionType
 import com.phinnovation.quizplayer.framework.Interactors
 import com.phinnovation.quizplayer.framework.QuizPlayerViewModel
 import com.phinnovation.quizplayer.presentation.utils.Event
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class QuestionEditorViewModel (application: Application, interactors: Interactors):
         QuizPlayerViewModel(application,interactors) {
@@ -42,25 +40,20 @@ class QuestionEditorViewModel (application: Application, interactors: Interactor
             itQuestion.choiceTitle4 = answer4
             itQuestion.correctAnswer = correctAnswers
 
-            GlobalScope.launch {
-                withContext(Dispatchers.IO) {
-                    interactors.updateQuestion(quiz,itQuestion)
-                    _navigateUp.postValue(Event(true))
-                }
+            viewModelScope.launch {
+                interactors.updateQuestion(quiz,itQuestion)
+                _navigateUp.postValue(Event(true))
             }
         }
     }
 
     fun deleteQuestionAndNavigateUp() {
-
         val quiz = interactors.getOpenQuiz()
 
         question.value?.let { itQuestion ->
-            GlobalScope.launch {
-                withContext(Dispatchers.IO) {
-                    interactors.removeQuestion(quiz,itQuestion)
-                    _navigateUp.postValue(Event(true))
-                }
+            viewModelScope.launch {
+                interactors.removeQuestion(quiz,itQuestion)
+                _navigateUp.postValue(Event(true))
             }
         }
     }
