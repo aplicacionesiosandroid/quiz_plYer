@@ -15,14 +15,16 @@ class TesterQuizIntroViewModel (application: Application, interactors: Interacto
         QuizPlayerViewModel(application,interactors) {
 
     private val _navigateToQuizPlayScreen = MutableLiveData<Event<Boolean>>()
+    private var _quiz: MutableLiveData<Quiz> = MutableLiveData()
 
     val navigateToQuizPlayScreenEvent: LiveData<Event<Boolean>>
         get() = _navigateToQuizPlayScreen
 
-    var quiz: MutableLiveData<Quiz> = MutableLiveData()
+    val quiz:LiveData<Quiz>
+        get() = _quiz
 
     fun getOpenQuiz() {
-        quiz.postValue(interactors.getOpenQuiz())
+        _quiz.value = interactors.getOpenQuiz()
     }
 
     fun updateQuizStatusToStarted() {
@@ -31,7 +33,7 @@ class TesterQuizIntroViewModel (application: Application, interactors: Interacto
 
             viewModelScope.launch {
                 interactors.updateQuiz(it)
-                _navigateToQuizPlayScreen.postValue(Event(true))
+                _navigateToQuizPlayScreen.value = Event(true)
             }
         }
     }

@@ -15,14 +15,16 @@ class QuestionEditorViewModel (application: Application, interactors: Interactor
         QuizPlayerViewModel(application,interactors) {
 
     private val _navigateUp = MutableLiveData<Event<Boolean>>()
+    private val _question: MutableLiveData<Question> = MutableLiveData()
 
     val navigateUpEvent: LiveData<Event<Boolean>>
         get() = _navigateUp
 
-    var question: MutableLiveData<Question> = MutableLiveData()
+    val question:LiveData<Question>
+        get() = _question
 
     fun getOpenQuestion() {
-        question.value = interactors.getOpenQuestion()
+        _question.value = interactors.getOpenQuestion()
     }
 
     fun updateQuestionAndNavigateUp(title: String, desc:String, type:QuestionType, answer1:String,answer2:String,answer3:String,answer4:String,correctAnswers:String) {
@@ -42,7 +44,7 @@ class QuestionEditorViewModel (application: Application, interactors: Interactor
 
             viewModelScope.launch {
                 interactors.updateQuestion(quiz,itQuestion)
-                _navigateUp.postValue(Event(true))
+                _navigateUp.value = Event(true)
             }
         }
     }
@@ -53,7 +55,7 @@ class QuestionEditorViewModel (application: Application, interactors: Interactor
         question.value?.let { itQuestion ->
             viewModelScope.launch {
                 interactors.removeQuestion(quiz,itQuestion)
-                _navigateUp.postValue(Event(true))
+                _navigateUp.value = Event(true)
             }
         }
     }

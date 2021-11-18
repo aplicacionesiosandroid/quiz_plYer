@@ -16,6 +16,8 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
 
     private val _navigateToQuestion = MutableLiveData<Event<Boolean>>()
     private val _navigateUp = MutableLiveData<Event<Boolean>>()
+    private var _quiz: MutableLiveData<Quiz> = MutableLiveData()
+    private val _questions: MutableLiveData<List<Question>> = MutableLiveData()
 
     val navigateToQuestionEvent: LiveData<Event<Boolean>>
         get() = _navigateToQuestion
@@ -23,9 +25,11 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
     val navigateUpEvent: LiveData<Event<Boolean>>
         get() = _navigateUp
 
-    var quiz: MutableLiveData<Quiz> = MutableLiveData()
+    val quiz: MutableLiveData<Quiz>
+        get() = _quiz
 
-    val questions: MutableLiveData<List<Question>> = MutableLiveData()
+    val questions: LiveData<List<Question>>
+        get() = _questions
 
     fun getOpenQuizAndLoadQuestions() {
         val newQuiz = interactors.getOpenQuiz()
@@ -42,7 +46,7 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
             viewModelScope.launch {
                 interactors.updateQuiz(it)
                 setOpenQuestion(question)
-                _navigateToQuestion.postValue(Event(true))
+                _navigateToQuestion.value = Event(true)
             }
         }
     }
@@ -54,7 +58,7 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
 
             viewModelScope.launch {
                 interactors.updateQuiz(it)
-                _navigateUp.postValue(Event(true))
+                _navigateUp.value = Event(true)
             }
         }
     }
@@ -67,7 +71,7 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
                 }
 
                 interactors.removeQuiz(it)
-                _navigateUp.postValue(Event(true))
+                _navigateUp.value = Event(true)
             }
         }
     }
@@ -87,7 +91,7 @@ class QuizEditorViewModel (application: Application, interactors: Interactors):
 
     private fun loadQuizQuestions(quiz:Quiz) {
         viewModelScope.launch {
-            questions.postValue(interactors.getQuestions(quiz))
+            _questions.value  = interactors.getQuestions(quiz)
         }
     }
 

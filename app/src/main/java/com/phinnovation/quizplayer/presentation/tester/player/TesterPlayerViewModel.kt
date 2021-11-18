@@ -15,8 +15,9 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
     QuizPlayerViewModel(application, interactors) {
 
     private val _answerIsCorrectOrNot = MutableLiveData<Boolean>()
-    private var _showNextOrFinishEvent = MutableLiveData<Event<Boolean>>()
+    private val _showNextOrFinishEvent = MutableLiveData<Event<Boolean>>()
     private val _answerCheckedHasMoreQuestions = MutableLiveData<Boolean>()
+    private val _currentQuestionItsIndexAndMaxQuestionsTriple:MutableLiveData<Triple<Question,Int,Int>> = MutableLiveData()
 
     val answerCheckedHasMoreQuestions: LiveData<Boolean>
         get() = _answerCheckedHasMoreQuestions
@@ -27,15 +28,16 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
     val showNextOrFinishEvent: LiveData<Event<Boolean>>
         get() = _showNextOrFinishEvent
 
+    val currentQuestionItsIndexAndMaxQuestionsTriple: LiveData<Triple<Question,Int,Int>>
+        get() = _currentQuestionItsIndexAndMaxQuestionsTriple
 
-    var currentQuestionItsIndexAndMaxQuestionsTriple:MutableLiveData<Triple<Question,Int,Int>> = MutableLiveData()
 
     fun getCurrentQuestionToPlay() {
         val quiz = interactors.getOpenQuiz()
 
         viewModelScope.launch {
             val questions = interactors.getQuestions(quiz)
-            currentQuestionItsIndexAndMaxQuestionsTriple.postValue(Triple<Question,Int,Int>(questions[quiz.lastSeenQuestion],quiz.lastSeenQuestion+1,questions.size))
+            _currentQuestionItsIndexAndMaxQuestionsTriple.value = Triple<Question,Int,Int>(questions[quiz.lastSeenQuestion],quiz.lastSeenQuestion+1,questions.size)
         }
     }
 
@@ -45,11 +47,7 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
         viewModelScope.launch {
             val questions = interactors.getQuestions(quiz)
 
-            if (userAnswer == questions[quiz.lastSeenQuestion].correctAnswer) {
-                _answerIsCorrectOrNot.postValue(true)
-            } else {
-                _answerIsCorrectOrNot.postValue(false)
-            }
+            _answerIsCorrectOrNot.value = userAnswer == questions[quiz.lastSeenQuestion].correctAnswer
 
             var hasMoreQuestions = true
 
@@ -57,7 +55,7 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
                 hasMoreQuestions = false
             }
 
-            _answerCheckedHasMoreQuestions.postValue(hasMoreQuestions)
+            _answerCheckedHasMoreQuestions.value = hasMoreQuestions
         }
     }
 
@@ -78,7 +76,7 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
 
             interactors.updateQuiz(quiz)
 
-            _showNextOrFinishEvent.postValue(Event(showNext))
+            _showNextOrFinishEvent.value = Event(showNext)
         }
     }
 
@@ -96,7 +94,7 @@ class TesterPlayerViewModel(application: Application, interactors: Interactors) 
 
             interactors.updateQuiz(quiz)
 
-            _showNextOrFinishEvent.postValue(Event(false))
+            _showNextOrFinishEvent.value = Event(false)
         }
     }
 }

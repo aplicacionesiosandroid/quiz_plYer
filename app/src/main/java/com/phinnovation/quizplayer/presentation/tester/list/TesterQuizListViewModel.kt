@@ -17,6 +17,7 @@ class TesterQuizListViewModel(application: Application, interactors: Interactors
     private val _navigateToQuiz = MutableLiveData<Event<Boolean>>()
     private val _showEmptyQuestionsError = MutableLiveData<Event<Boolean>>()
     private val _showQuizFinishedError = MutableLiveData<Event<Boolean>>()
+    private val _quizzes: MutableLiveData<List<Quiz>> = MutableLiveData()
 
     val navigateToQuizEvent: LiveData<Event<Boolean>>
         get() = _navigateToQuiz
@@ -27,11 +28,12 @@ class TesterQuizListViewModel(application: Application, interactors: Interactors
     val showQuizFinishedErrorEvent: LiveData<Event<Boolean>>
         get() = _showQuizFinishedError
 
-    val quizzes: MutableLiveData<List<Quiz>> = MutableLiveData()
+    val quizzes: LiveData<List<Quiz>>
+        get() = _quizzes
 
     fun loadQuizzes() {
         viewModelScope.launch {
-            quizzes.postValue(interactors.getQuizes())
+            _quizzes.value = interactors.getQuizes()
         }
     }
 
@@ -47,10 +49,10 @@ class TesterQuizListViewModel(application: Application, interactors: Interactors
                     //we will continue to the next screen
                     //set openQuiz and post navigateToQuiz
                     setOpenQuiz(quiz)
-                    _navigateToQuiz.postValue(Event(true))
+                    _navigateToQuiz.value = Event(true)
                 } else {
                     //no questions, quiz is not setup yet, post error
-                    _showEmptyQuestionsError.postValue(Event(true))
+                    _showEmptyQuestionsError.value = Event(true)
                 }
             }
         }
