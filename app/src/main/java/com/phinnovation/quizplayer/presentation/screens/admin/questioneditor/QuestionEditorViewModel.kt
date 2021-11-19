@@ -1,4 +1,4 @@
-package com.phinnovation.quizplayer.presentation.admin.questioneditor
+package com.phinnovation.quizplayer.presentation.screens.admin.questioneditor
 
 import android.app.Application
 import androidx.lifecycle.LiveData

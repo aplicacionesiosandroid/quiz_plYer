@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".presentation.tester.player.TesterPlayerFragment">
+    tools:context=".presentation.screens.tester.player.TesterPlayerFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".presentation.tester.intro.TesterQuizIntroFragment">
+        tools:context=".presentation.screens.tester.intro.TesterQuizIntroFragment">
 
         <LinearLayout
             android:id="@+id/linearLayout2"

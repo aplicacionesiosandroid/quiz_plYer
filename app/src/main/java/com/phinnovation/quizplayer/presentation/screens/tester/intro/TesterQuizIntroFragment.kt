@@ -1,4 +1,4 @@
-package com.phinnovation.quizplayer.presentation.admin.quizlist
+package com.phinnovation.quizplayer.presentation.screens.tester.intro
 
 import android.content.Context
 import android.os.Bundle
@@ -8,20 +8,21 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.phinnovation.core.domain.QuizState
 import com.phinnovation.quizplayer.R
 import com.phinnovation.quizplayer.presentation.application.QuizPlayerApplication
 import com.phinnovation.quizplayer.presentation.MainActivityDelegate
-import kotlinx.android.synthetic.main.fragment_admin_list.*
+import kotlinx.android.synthetic.main.fragment_tester_intro.*
 import javax.inject.Inject
 
-class AdminQuizListFragment : Fragment() {
+class TesterQuizIntroFragment : Fragment() {
 
     private lateinit var mainActivityDelegate: MainActivityDelegate
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
 
-    private lateinit var viewModel: AdminQuizListViewModel
+    private lateinit var viewModel: TesterQuizIntroViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,43 +45,34 @@ class AdminQuizListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        return inflater.inflate(R.layout.fragment_admin_list, container, false)
-
+        return inflater.inflate(R.layout.fragment_tester_intro, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProvider(this, factory)[AdminQuizListViewModel::class.java]
+        viewModel = ViewModelProvider(this, factory)[TesterQuizIntroViewModel::class.java]
 
-        val adapter = AdminQuizListAdapter() {
-            //Adapter click handler
-            viewModel.setOpenQuizAndNavigate(it)
-        }
-        quizRecyclerView.adapter = adapter
+        viewModel.quiz.observe(viewLifecycleOwner, Observer {
+            quizTitle.text = it.title
+            quizDescription.text = it.description
 
-        viewModel.quizzes.observe(viewLifecycleOwner, Observer {
-            if (it.isNotEmpty()) {
-                emptyQuizesLabel.visibility = View.GONE
-            } else {
-                emptyQuizesLabel.visibility = View.VISIBLE
-            }
-            adapter.update(it)
-        })
-
-        viewModel.navigateToQuizEvent.observe(viewLifecycleOwner, Observer {
-            it.getContentIfNotHandled()?.let { // Only proceed if the event has never been handled
-                mainActivityDelegate.openQuizForEditing()
+            if (it.state != QuizState.NOT_STARTED) {
+                startQuizButton.setText(R.string.continue_quiz)
+                continueQuizText.visibility = View.VISIBLE
+                continueQuizText.text = getString(R.string.continue_quiz_from,it.lastSeenQuestion+1)
             }
         })
 
-        fab.setOnClickListener {
-            viewModel.addQuiz()
+        viewModel.getOpenQuiz()
+
+        startQuizButton.setOnClickListener {
+            viewModel.updateQuizStatusToStarted()
         }
 
-        viewModel.loadQuizzes()
+        viewModel.navigateToQuizPlayScreenEvent.observe(viewLifecycleOwner, Observer {
+            mainActivityDelegate.openQuizForPlayTest()
+        })
 
     }
-
 }

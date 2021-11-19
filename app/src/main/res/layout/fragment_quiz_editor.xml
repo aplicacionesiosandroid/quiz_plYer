@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".presentation.admin.quizeditor.QuizEditorFragment">
+        tools:context=".presentation.screens.admin.quizeditor.QuizEditorFragment">
         <Button
             android:id="@+id/updateButton"
             android:layout_width="wrap_content"

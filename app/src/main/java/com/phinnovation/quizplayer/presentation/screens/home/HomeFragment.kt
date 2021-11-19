@@ -1,4 +1,4 @@
-package com.phinnovation.quizplayer.presentation.home
+package com.phinnovation.quizplayer.presentation.screens.home
 
 import android.os.Bundle
 import android.view.LayoutInflater

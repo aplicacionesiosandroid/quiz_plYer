@@ -1,11 +1,11 @@
 package com.phinnovation.quizplayer.framework.dagger
 
-import com.phinnovation.quizplayer.presentation.admin.questioneditor.QuestionEditorFragment
-import com.phinnovation.quizplayer.presentation.admin.quizeditor.QuizEditorFragment
-import com.phinnovation.quizplayer.presentation.admin.quizlist.AdminQuizListFragment
-import com.phinnovation.quizplayer.presentation.tester.intro.TesterQuizIntroFragment
-import com.phinnovation.quizplayer.presentation.tester.list.TesterQuizListFragment
-import com.phinnovation.quizplayer.presentation.tester.player.TesterPlayerFragment
+import com.phinnovation.quizplayer.presentation.screens.admin.questioneditor.QuestionEditorFragment
+import com.phinnovation.quizplayer.presentation.screens.admin.quizeditor.QuizEditorFragment
+import com.phinnovation.quizplayer.presentation.screens.admin.quizlist.AdminQuizListFragment
+import com.phinnovation.quizplayer.presentation.screens.tester.intro.TesterQuizIntroFragment
+import com.phinnovation.quizplayer.presentation.screens.tester.list.TesterQuizListFragment
+import com.phinnovation.quizplayer.presentation.screens.tester.player.TesterPlayerFragment
 import dagger.Component
 import javax.inject.Singleton
 

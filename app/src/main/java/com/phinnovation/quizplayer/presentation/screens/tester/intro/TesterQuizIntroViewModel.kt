@@ -1,4 +1,4 @@
-package com.phinnovation.quizplayer.presentation.tester.intro
+package com.phinnovation.quizplayer.presentation.screens.tester.intro
 
 import android.app.Application
 import androidx.lifecycle.LiveData

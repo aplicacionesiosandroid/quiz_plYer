@@ -28,7 +28,7 @@
  * THE SOFTWARE.
  */
 
-package com.phinnovation.quizplayer.presentation.tester.list
+package com.phinnovation.quizplayer.presentation.screens.tester.list
 
 import android.view.LayoutInflater
 import android.view.View

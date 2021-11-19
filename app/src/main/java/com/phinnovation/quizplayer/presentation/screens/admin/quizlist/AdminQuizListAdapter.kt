@@ -28,25 +28,26 @@
  * THE SOFTWARE.
  */
 
-package com.phinnovation.quizplayer.presentation.admin.quizeditor
+package com.phinnovation.quizplayer.presentation.screens.admin.quizlist
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.phinnovation.core.domain.Question
+import com.phinnovation.core.domain.Quiz
 import com.phinnovation.quizplayer.R
 import kotlinx.android.synthetic.main.admin_quiz_item.view.*
 
 
-class QuizEditorQuestionListAdapter(
-        private val questions: MutableList<Question> = mutableListOf(),
-        private val itemClickListener: (Question) -> Unit
-) : RecyclerView.Adapter<QuizEditorQuestionListAdapter.ViewHolder>() {
+class AdminQuizListAdapter(
+        private val quizzes: MutableList<Quiz> = mutableListOf(),
+        private val itemClickListener: (Quiz) -> Unit
+) : RecyclerView.Adapter<AdminQuizListAdapter.ViewHolder>() {
 
   class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val titleTextView: TextView = view.tvTitle
+    val descTextView: TextView = view.tvDesc
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -56,16 +57,17 @@ class QuizEditorQuestionListAdapter(
     )
   }
 
-  override fun getItemCount() = questions.size
+  override fun getItemCount() = quizzes.size
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.run {
-    holder.titleTextView.text = questions[position].id.toString() + " : " + questions[position].title
-    holder.itemView.setOnClickListener { itemClickListener.invoke(questions[position]) }
+    holder.titleTextView.text = quizzes[position].id.toString() + " : " + quizzes[position].title
+    holder.descTextView.text = quizzes[position].description
+    holder.itemView.setOnClickListener { itemClickListener.invoke(quizzes[position]) }
   }
 
-  fun update(newQuestions: List<Question>) {
-    questions.clear()
-    questions.addAll(newQuestions)
+  fun update(newQuizzes: List<Quiz>) {
+    quizzes.clear()
+    quizzes.addAll(newQuizzes)
 
     notifyDataSetChanged()
   }

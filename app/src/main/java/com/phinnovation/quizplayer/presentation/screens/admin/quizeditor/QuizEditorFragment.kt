@@ -1,4 +1,4 @@
-package com.phinnovation.quizplayer.presentation.admin.quizeditor
+package com.phinnovation.quizplayer.presentation.screens.admin.quizeditor
 
 import android.content.Context
 import android.os.Bundle
